@@ -1,0 +1,785 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#101820">
+    <title>SellSnap Studio</title>
+    <link rel="icon" href="icon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="styles.css?v=17">
+  </head>
+  <body>
+    <svg class="sprite" aria-hidden="true">
+      <symbol id="icon-image" viewBox="0 0 24 24">
+        <path d="M4 5.8A1.8 1.8 0 0 1 5.8 4h12.4A1.8 1.8 0 0 1 20 5.8v12.4a1.8 1.8 0 0 1-1.8 1.8H5.8A1.8 1.8 0 0 1 4 18.2Z"></path>
+        <path d="m5 16 4.2-4.2a1.2 1.2 0 0 1 1.7 0L14 15l1.2-1.2a1.2 1.2 0 0 1 1.7 0L20 17"></path>
+        <path d="M15.5 8.5h.01"></path>
+      </symbol>
+      <symbol id="icon-download" viewBox="0 0 24 24">
+        <path d="M12 3v12"></path>
+        <path d="m7 10 5 5 5-5"></path>
+        <path d="M5 21h14"></path>
+      </symbol>
+      <symbol id="icon-share" viewBox="0 0 24 24">
+        <path d="M18 8a3 3 0 1 0-2.83-4"></path>
+        <path d="M6 15a3 3 0 1 0 2.83 4"></path>
+        <path d="M8.6 14.1 15.4 18"></path>
+        <path d="M15.4 6 8.6 9.9"></path>
+        <path d="M6 12a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"></path>
+      </symbol>
+      <symbol id="icon-lock" viewBox="0 0 24 24">
+        <rect x="5" y="11" width="14" height="10" rx="2"></rect>
+        <path d="M8 11V8a4 4 0 0 1 8 0v3"></path>
+      </symbol>
+      <symbol id="icon-copy" viewBox="0 0 24 24">
+        <rect x="9" y="9" width="11" height="11" rx="2"></rect>
+        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+      </symbol>
+      <symbol id="icon-refresh" viewBox="0 0 24 24">
+        <path d="M20 12a8 8 0 1 1-2.34-5.66"></path>
+        <path d="M20 4v6h-6"></path>
+      </symbol>
+      <symbol id="icon-save" viewBox="0 0 24 24">
+        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"></path>
+        <path d="M17 21v-8H7v8"></path>
+        <path d="M7 3v5h8"></path>
+      </symbol>
+      <symbol id="icon-trash" viewBox="0 0 24 24">
+        <path d="M3 6h18"></path>
+        <path d="M8 6V4h8v2"></path>
+        <path d="m19 6-1 15H6L5 6"></path>
+      </symbol>
+      <symbol id="icon-mail" viewBox="0 0 24 24">
+        <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+        <path d="m3 7 9 6 9-6"></path>
+      </symbol>
+      <symbol id="icon-telegram" viewBox="0 0 24 24">
+        <path d="M22 2 11 13"></path>
+        <path d="m22 2-7 20-4-9-9-4 20-7z"></path>
+      </symbol>
+    </svg>
+
+    <div class="app">
+      <header class="topbar">
+        <div class="brand">
+          <img src="icon.svg" alt="" class="brand-mark">
+          <div>
+            <strong>SellSnap</strong>
+            <span>Studio</span>
+          </div>
+        </div>
+        <button class="status-pill" id="licenseButton" type="button">
+          <svg><use href="#icon-lock"></use></svg>
+          <span id="licenseText">Preview</span>
+        </button>
+      </header>
+
+      <main class="workspace">
+        <section class="preview-column">
+          <section class="preview-shell" aria-label="Poster preview">
+            <canvas id="posterCanvas" width="1080" height="1350"></canvas>
+          </section>
+
+          <section class="action-row" aria-label="Poster actions">
+            <label class="action-button" for="photoInput" title="Import product photo">
+              <svg><use href="#icon-image"></use></svg>
+              <span>Photo</span>
+            </label>
+            <button class="action-button" id="exportButton" type="button" title="Export poster">
+              <svg><use href="#icon-download"></use></svg>
+              <span>Export</span>
+            </button>
+            <button class="action-button" id="shareButton" type="button" title="Share poster">
+              <svg><use href="#icon-share"></use></svg>
+              <span>Share</span>
+            </button>
+            <button class="action-button" id="saveProductButton" type="button" title="Save product">
+              <svg><use href="#icon-save"></use></svg>
+              <span>Save</span>
+            </button>
+          </section>
+
+          <section class="guide-card" aria-label="Creation guide">
+            <div class="guide-copy">
+              <span class="mini-label">Next</span>
+              <strong id="nextStepTitle">Add product photo</strong>
+              <span id="nextStepDetail">Use a clear image for a stronger poster.</span>
+            </div>
+            <button class="primary-button guide-next" id="nextStepButton" type="button">Continue</button>
+            <div class="step-rail" id="stepRail" aria-label="Progress">
+              <button class="step-chip active" data-guide-step="product" type="button">
+                <span>1</span>
+                <strong>Details</strong>
+              </button>
+              <button class="step-chip" data-guide-step="photo" type="button">
+                <span>2</span>
+                <strong>Photo</strong>
+              </button>
+              <button class="step-chip" data-guide-step="design" type="button">
+                <span>3</span>
+                <strong>Design</strong>
+              </button>
+              <button class="step-chip" data-guide-step="campaign" type="button">
+                <span>4</span>
+                <strong>Kit</strong>
+              </button>
+              <button class="step-chip" data-guide-step="export" type="button">
+                <span>5</span>
+                <strong>Export</strong>
+              </button>
+            </div>
+          </section>
+          <input class="file-input" id="photoInput" type="file" accept="image/*">
+        </section>
+
+        <section class="editor-shell" aria-label="Poster editor">
+          <nav class="tabs" aria-label="Editor tabs">
+            <button class="tab active" data-tab="product" type="button">Product</button>
+            <button class="tab" data-tab="design" type="button">Design</button>
+            <button class="tab" data-tab="campaign" type="button">Kit</button>
+            <button class="tab" data-tab="captions" type="button">Caption</button>
+            <button class="tab" data-tab="license" type="button">License</button>
+          </nav>
+
+          <section class="panel active" id="panel-product">
+            <div class="control-group first-control">
+              <span class="control-label">Market</span>
+              <div class="segmented two">
+                <button class="segment active" data-market="foreign" type="button">Foreign</button>
+                <button class="segment" data-market="ethiopia" type="button">Ethiopia</button>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <span class="control-label">Language</span>
+              <div class="segmented three">
+                <button class="segment active" data-language="en" type="button">English</button>
+                <button class="segment" data-language="om" type="button">Oromo</button>
+                <button class="segment" data-language="am" type="button">Amharic</button>
+              </div>
+            </div>
+
+            <div class="field-grid">
+              <label>
+                <span>Shop</span>
+                <input data-field="shopName" type="text" autocomplete="organization">
+              </label>
+              <label>
+                <span>Product</span>
+                <input data-field="productName" type="text">
+              </label>
+              <label>
+                <span>Price</span>
+                <input data-field="price" type="text" inputmode="decimal">
+              </label>
+              <label>
+                <span>Old price</span>
+                <input data-field="oldPrice" type="text" inputmode="decimal">
+              </label>
+              <label>
+                <span>Currency</span>
+                <input data-field="currency" type="text" maxlength="4">
+              </label>
+              <label>
+                <span>Contact</span>
+                <input data-field="phone" type="tel">
+              </label>
+              <label class="wide">
+                <span>Call to action</span>
+                <input data-field="cta" type="text">
+              </label>
+            </div>
+
+            <div class="slider-line">
+              <label for="zoomInput">Zoom</label>
+              <input id="zoomInput" type="range" min="1" max="2.2" value="1" step="0.01">
+            </div>
+            <div class="slider-line">
+              <label for="liftInput">Lift</label>
+              <input id="liftInput" type="range" min="-220" max="220" value="0" step="1">
+            </div>
+
+            <label class="wide control-field">
+              <span>Discount timer (e.g. "2 days left")</span>
+              <input id="discountTimerInput" type="text" maxlength="30" placeholder="e.g. 2 days left">
+            </label>
+
+            <label class="wide control-field">
+              <span>Shop rating</span>
+              <input id="shopRatingInput" type="text" maxlength="5" placeholder="e.g. 4.8">
+            </label>
+
+            <label class="wide control-field">
+              <span>Shop location</span>
+              <input id="shopLocationInput" type="text" maxlength="40" placeholder="e.g. Addis Ababa">
+            </label>
+
+            <div class="control-group">
+              <span class="control-label">Text align</span>
+              <div class="segmented three" id="alignmentGrid">
+                <button class="segment active" data-align="left" type="button">Left</button>
+                <button class="segment" data-align="center" type="button">Center</button>
+                <button class="segment" data-align="right" type="button">Right</button>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel" id="panel-design">
+            <div class="section-title compact">
+              <strong>Poster system</strong>
+              <span>Templates, color, and banner treatment.</span>
+            </div>
+            <div class="template-grid" id="templateGrid">
+              <button class="template active" data-template="market" type="button">
+                <span class="template-swatch market"></span>
+                <span>Market</span>
+                <small>Free</small>
+              </button>
+              <button class="template" data-template="luxe" type="button">
+                <span class="template-swatch luxe"></span>
+                <span>Luxe</span>
+                <small>Free</small>
+              </button>
+              <button class="template" data-template="pulse" type="button">
+                <span class="template-swatch pulse"></span>
+                <span>Pulse</span>
+                <small>Free</small>
+              </button>
+              <button class="template" data-template="clean" type="button">
+                <span class="template-swatch clean"></span>
+                <span>Clean</span>
+              </button>
+              <button class="template" data-template="mono" type="button">
+                <span class="template-swatch mono"></span>
+                <span>Mono</span>
+              </button>
+              <button class="template" data-template="social" type="button">
+                <span class="template-swatch social"></span>
+                <span>Social</span>
+              </button>
+              <button class="template" data-template="urban" type="button">
+                <span class="template-swatch urban"></span>
+                <span>Urban</span>
+              </button>
+              <button class="template" data-template="minimal" type="button">
+                <span class="template-swatch minimal"></span>
+                <span>Minimal</span>
+              </button>
+              <button class="template" data-template="retro" type="button">
+                <span class="template-swatch retro"></span>
+                <span>Retro</span>
+              </button>
+              <button class="template" data-template="bold" type="button">
+                <span class="template-swatch bold"></span>
+                <span>Bold</span>
+              </button>
+              <button class="template" data-template="fresh" type="button">
+                <span class="template-swatch fresh"></span>
+                <span>Fresh</span>
+              </button>
+              <button class="template" data-template="gallery" type="button">
+                <span class="template-swatch gallery"></span>
+                <span>Gallery</span>
+              </button>
+              <button class="template" data-template="royal" type="button">
+                <span class="template-swatch royal"></span>
+                <span>Royal</span>
+              </button>
+              <button class="template" data-template="neon" type="button">
+                <span class="template-swatch neon"></span>
+                <span>Neon</span>
+              </button>
+              <button class="template" data-template="sunrise" type="button">
+                <span class="template-swatch sunrise"></span>
+                <span>Sunrise</span>
+              </button>
+              <button class="template" data-template="coffee" type="button">
+                <span class="template-swatch coffee"></span>
+                <span>Coffee</span>
+              </button>
+              <button class="template" data-template="tech" type="button">
+                <span class="template-swatch tech"></span>
+                <span>Tech</span>
+              </button>
+              <button class="template" data-template="boutique" type="button">
+                <span class="template-swatch boutique"></span>
+                <span>Boutique</span>
+              </button>
+              <button class="template" data-template="harar" type="button">
+                <span class="template-swatch harar"></span>
+                <span>Harar</span>
+              </button>
+              <button class="template" data-template="addis" type="button">
+                <span class="template-swatch addis"></span>
+                <span>Addis</span>
+              </button>
+              <button class="template" data-template="rift" type="button">
+                <span class="template-swatch rift"></span>
+                <span>Rift</span>
+              </button>
+              <button class="template" data-template="habesha" type="button">
+                <span class="template-swatch habesha"></span>
+                <span>Habesha</span>
+              </button>
+              <button class="template" data-template="jewelry" type="button">
+                <span class="template-swatch jewelry"></span>
+                <span>Jewelry</span>
+              </button>
+              <button class="template" data-template="sport" type="button">
+                <span class="template-swatch sport"></span>
+                <span>Sport</span>
+              </button>
+              <button class="template" data-template="cosmetic" type="button">
+                <span class="template-swatch cosmetic"></span>
+                <span>Cosmetic</span>
+              </button>
+            </div>
+            <button class="secondary-button wide-button" id="loadMoreTemplates" type="button">
+              <svg><use href="#icon-refresh"></use></svg>
+              <span>More designs</span>
+            </button>
+            <button class="primary-button wide-button" id="magicRemixButton" type="button">
+              <svg><use href="#icon-refresh"></use></svg>
+              <span>Magic Remix</span>
+            </button>
+
+            <div class="color-row" aria-label="Accent colors" id="colorRow">
+              <button class="color-dot active" data-color="#12b981" style="--dot: #12b981" type="button" title="Emerald"></button>
+              <button class="color-dot" data-color="#2563eb" style="--dot: #2563eb" type="button" title="Blue"></button>
+              <button class="color-dot" data-color="#7c3aed" style="--dot: #7c3aed" type="button" title="Violet"></button>
+              <button class="color-dot" data-color="#db2777" style="--dot: #db2777" type="button" title="Pink"></button>
+              <button class="color-dot" data-color="#ef4444" style="--dot: #ef4444" type="button" title="Red"></button>
+              <button class="color-dot" data-color="#f59e0b" style="--dot: #f59e0b" type="button" title="Amber"></button>
+              <button class="color-dot" data-color="#06b6d4" style="--dot: #06b6d4" type="button" title="Cyan"></button>
+              <button class="color-dot" data-color="#111827" style="--dot: #111827" type="button" title="Ink"></button>
+              <button class="color-dot" data-color="#8b5cf6" style="--dot: #8b5cf6" type="button" title="Purple"></button>
+              <button class="color-dot" data-color="#f97316" style="--dot: #f97316" type="button" title="Orange"></button>
+              <button class="color-dot" data-color="#14b8a6" style="--dot: #14b8a6" type="button" title="Teal"></button>
+              <button class="color-dot" data-color="#84cc16" style="--dot: #84cc16" type="button" title="Lime"></button>
+            </div>
+            <button class="secondary-button wide-button" id="loadMoreColors" type="button">
+              <svg><use href="#icon-refresh"></use></svg>
+              <span>More colors</span>
+            </button>
+
+            <div class="section-title compact">
+              <strong>Text color</strong>
+              <span>Control the poster text color by selecting the text block first.</span>
+            </div>
+            <div class="segmented text-target-row">
+              <button class="segment active" data-text-target="product" type="button">Product</button>
+              <button class="segment" data-text-target="header" type="button">Header</button>
+              <button class="segment" data-text-target="price" type="button">Price</button>
+              <button class="segment" data-text-target="timer" type="button">Timer</button>
+              <button class="segment" data-text-target="shopInfo" type="button">Info</button>
+              <button class="segment" data-text-target="footer" type="button">Footer</button>
+            </div>
+            <div class="color-row" aria-label="Text colors" id="textColorRow">
+              <button class="color-dot" data-text-color="#111827" style="--dot: #111827" type="button" title="Black"></button>
+              <button class="color-dot" data-text-color="#ffffff" style="--dot: #ffffff" type="button" title="White"></button>
+              <button class="color-dot" data-text-color="#f59e0b" style="--dot: #f59e0b" type="button" title="Amber"></button>
+              <button class="color-dot" data-text-color="#22c55e" style="--dot: #22c55e" type="button" title="Green"></button>
+              <button class="color-dot" data-text-color="#2563eb" style="--dot: #2563eb" type="button" title="Blue"></button>
+              <button class="color-dot" data-text-color="#db2777" style="--dot: #db2777" type="button" title="Pink"></button>
+              <button class="color-dot" data-text-color="#a855f7" style="--dot: #a855f7" type="button" title="Purple"></button>
+              <button class="color-dot" data-text-color="#0f172a" style="--dot: #0f172a" type="button" title="Ink"></button>
+            </div>
+            <div class="control-group">
+              <label class="control-label" for="textColorPicker">Custom text color</label>
+              <input id="textColorPicker" type="color" value="#111827" />
+            </div>
+
+            <div class="control-group">
+              <span class="control-label">Banner style</span>
+              <div class="banner-scroll">
+                <div class="segmented four" id="bannerGrid">
+                  <button class="segment active" data-banner="ribbon" type="button">Ribbon</button>
+                  <button class="segment" data-banner="pill" type="button">Pill</button>
+                  <button class="segment" data-banner="corner" type="button">Corner</button>
+                  <button class="segment" data-banner="band" type="button">Band</button>
+                  <button class="segment" data-banner="arc" type="button">Arc</button>
+                  <button class="segment" data-banner="wave" type="button">Wave</button>
+                  <button class="segment" data-banner="slash" type="button">Slash</button>
+                  <button class="segment" data-banner="badge" type="button">Badge</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <span class="control-label">Banner place</span>
+              <div class="segmented four" id="bannerPosGrid">
+                <button class="segment active" data-banner-pos="top" type="button">Top</button>
+                <button class="segment" data-banner-pos="right" type="button">Right</button>
+                <button class="segment" data-banner-pos="bottom" type="button">Bottom</button>
+                <button class="segment" data-banner-pos="left" type="button">Left</button>
+              </div>
+            </div>
+
+            <label class="wide control-field">
+              <span>Banner text</span>
+              <input id="badgeTextInput" type="text" maxlength="18">
+            </label>
+
+            <div class="toggle-line">
+              <span>Badge</span>
+              <label class="switch">
+                <input id="badgeInput" type="checkbox" checked>
+                <span></span>
+              </label>
+            </div>
+
+            <div class="control-group">
+              <span class="control-label">Stickers</span>
+              <div class="sticker-scroll" id="stickerGrid">
+                <div class="segmented five">
+                  <button class="segment active" data-sticker="none" type="button">None</button>
+                  <button class="segment" data-sticker="spark" type="button">Spark</button>
+                  <button class="segment" data-sticker="sale" type="button">Sale</button>
+                  <button class="segment" data-sticker="hearts" type="button">Hearts</button>
+                  <button class="segment" data-sticker="confetti" type="button">Confetti</button>
+                  <button class="segment" data-sticker="stars" type="button">Stars</button>
+                  <button class="segment" data-sticker="lightning" type="button">Bolt</button>
+                  <button class="segment" data-sticker="fire" type="button">Fire</button>
+                  <button class="segment" data-sticker="snow" type="button">Snow</button>
+                  <button class="segment" data-sticker="music" type="button">Music</button>
+                  <button class="segment" data-sticker="crown" type="button">Crown</button>
+                  <button class="segment" data-sticker="trophy" type="button">Trophy</button>
+                  <button class="segment" data-sticker="rocket" type="button">Rocket</button>
+                  <button class="segment" data-sticker="diamond" type="button">Diamond</button>
+                  <button class="segment" data-sticker="flame" type="button">Flame</button>
+                  <button class="segment" data-sticker="burst" type="button">Burst</button>
+                  <button class="segment" data-sticker="arrow" type="button">Arrow</button>
+                  <button class="segment" data-sticker="check" type="button">Check</button>
+                  <button class="segment" data-sticker="starburst" type="button">StarBurst</button>
+                  <button class="segment" data-sticker="snowflake" type="button">Snowflake</button>
+                  <button class="segment" data-sticker="wave" type="button">Wave</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="toggle-line">
+              <span>Pattern</span>
+              <label class="switch">
+                <input id="patternInput" type="checkbox">
+                <span></span>
+              </label>
+            </div>
+
+            <div class="toggle-line">
+              <span>Shade overlay</span>
+              <label class="switch">
+                <input id="shadeInput" type="checkbox">
+                <span></span>
+              </label>
+            </div>
+
+            <div class="toggle-line">
+              <span>Remove photo bg</span>
+              <label class="switch">
+                <input id="bgRemoveInput" type="checkbox">
+                <span></span>
+              </label>
+            </div>
+
+            <div class="control-group">
+              <span class="control-label">Brush</span>
+              <div class="segmented three" id="brushGrid">
+                <button class="segment active" data-brush="none" type="button">Off</button>
+                <button class="segment" data-brush="draw" type="button">Draw</button>
+                <button class="segment" data-brush="erase" type="button">Erase</button>
+              </div>
+            </div>
+
+            <div class="slider-line">
+              <label for="brushSizeInput">Brush size</label>
+              <input id="brushSizeInput" type="range" min="2" max="40" value="8" step="1">
+            </div>
+
+            <div class="control-group" id="patternTypeGroup" hidden>
+              <span class="control-label">Pattern type</span>
+              <div class="segmented" id="patternTypeGrid">
+                <button class="segment active" data-pattern-type="dots" type="button">Dots</button>
+                <button class="segment" data-pattern-type="stripes" type="button">Stripes</button>
+                <button class="segment" data-pattern-type="grid" type="button">Grid</button>
+                <button class="segment" data-pattern-type="waves" type="button">Waves</button>
+                <button class="segment" data-pattern-type="circles" type="button">Circles</button>
+                <button class="segment" data-pattern-type="triangles" type="button">Triangles</button>
+                <button class="segment" data-pattern-type="hexagons" type="button">Hexagons</button>
+                <button class="segment" data-pattern-type="diamonds" type="button">Diamonds</button>
+                <button class="segment" data-pattern-type="crosshatch" type="button">Crosshatch</button>
+                <button class="segment" data-pattern-type="zigzag" type="button">Zigzag</button>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <span class="control-label">Text effect</span>
+              <div class="segmented" id="textEffectGrid">
+                <button class="segment active" data-text-effect="none" type="button">None</button>
+                <button class="segment" data-text-effect="glow" type="button">Glow</button>
+                <button class="segment" data-text-effect="shadow" type="button">Shadow</button>
+                <button class="segment" data-text-effect="outline" type="button">Outline</button>
+                <button class="segment" data-text-effect="neon" type="button">Neon</button>
+                <button class="segment" data-text-effect="retro" type="button">Retro</button>
+              </div>
+            </div>
+
+            <div class="control-group slider-line">
+              <label class="control-label" for="textOpacityRange">Text opacity</label>
+              <input id="textOpacityRange" type="range" min="0" max="100" value="100" />
+              <span id="textOpacityValue">100%</span>
+            </div>
+
+            <div class="control-group slider-line">
+              <label class="control-label" for="bannerOpacityRange">Banner opacity</label>
+              <input id="bannerOpacityRange" type="range" min="0" max="100" value="100" />
+              <span id="bannerOpacityValue">100%</span>
+            </div>
+
+            <div class="control-group slider-line">
+              <label class="control-label" for="designOpacityRange">Design transparency</label>
+              <input id="designOpacityRange" type="range" min="0" max="100" value="100" />
+              <span id="designOpacityValue">100%</span>
+            </div>
+
+            <div class="control-group">
+              <span class="control-label">Export</span>
+              <div class="segmented two" id="exportFormatGrid">
+                <button class="segment active" data-export-format="png" type="button">PNG</button>
+                <button class="segment" data-export-format="jpeg" type="button">JPEG</button>
+              </div>
+            </div>
+
+            <div class="saved-list" id="savedList"></div>
+          </section>
+
+          <section class="panel" id="panel-campaign">
+            <div class="section-title compact">
+              <strong>Campaign kit</strong>
+              <span>Angles, formats, and launch copy.</span>
+            </div>
+
+            <div class="control-group">
+              <span class="control-label">Goal</span>
+              <div class="segmented four" id="campaignGoalGrid">
+                <button class="segment active" data-campaign-goal="sell" type="button">Sell</button>
+                <button class="segment" data-campaign-goal="clear" type="button">Clear</button>
+                <button class="segment" data-campaign-goal="launch" type="button">Launch</button>
+                <button class="segment" data-campaign-goal="premium" type="button">Premium</button>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <span class="control-label">Tone</span>
+              <div class="segmented three" id="campaignToneGrid">
+                <button class="segment active" data-campaign-tone="direct" type="button">Direct</button>
+                <button class="segment" data-campaign-tone="friendly" type="button">Friendly</button>
+                <button class="segment" data-campaign-tone="bold" type="button">Bold</button>
+              </div>
+            </div>
+
+            <div class="campaign-score" aria-label="Campaign score">
+              <div>
+                <span class="mini-label">Offer score</span>
+                <strong id="offerScore">Ready</strong>
+              </div>
+              <span id="offerDetail">Price, old price, and CTA</span>
+            </div>
+
+            <div class="inline-actions">
+              <button class="secondary-button" id="smartRemixButton" type="button">
+                <svg><use href="#icon-refresh"></use></svg>
+                <span>Remix</span>
+              </button>
+              <button class="secondary-button" id="copyCampaignButton" type="button">
+                <svg><use href="#icon-copy"></use></svg>
+                <span>Copy Kit</span>
+              </button>
+              <button class="secondary-button strong" id="exportPackButton" type="button">
+                <svg><use href="#icon-download"></use></svg>
+                <span>Pack</span>
+              </button>
+            </div>
+
+            <textarea id="campaignOutput" rows="10"></textarea>
+          </section>
+
+          <section class="panel" id="panel-captions">
+            <textarea id="captionOutput" rows="8"></textarea>
+            <div class="inline-actions">
+              <button class="secondary-button" id="captionNextButton" type="button">
+                <svg><use href="#icon-refresh"></use></svg>
+                <span>Rewrite</span>
+              </button>
+              <button class="secondary-button" id="copyCaptionButton" type="button">
+                <svg><use href="#icon-copy"></use></svg>
+                <span>Copy</span>
+              </button>
+              <button class="secondary-button strong" id="whatsAppButton" type="button">
+                <svg><use href="#icon-share"></use></svg>
+                <span>WhatsApp</span>
+              </button>
+            </div>
+          </section>
+
+          <section class="panel" id="panel-license">
+            <div class="license-status">
+              <div>
+                <span class="mini-label">Current access</span>
+                <strong id="accessStatus">Preview mode</strong>
+              </div>
+                <span id="accessDetail">Clean export requires Pro</span>
+            </div>
+
+            <div class="section-title">
+              <strong>Choose Pro</strong>
+              <span>Pay once, then paste your unlock code.</span>
+            </div>
+
+            <div class="plan-grid" id="planGrid">
+              <button class="plan-card" data-plan="monthly" type="button">
+                <span>30 days</span>
+                <strong>5 USDT</strong>
+                <small>99 Birr in Ethiopia</small>
+              </button>
+              <button class="plan-card active" data-plan="yearly" type="button">
+                <span>1 year</span>
+                <strong>24 USDT</strong>
+                <small>499 Birr in Ethiopia</small>
+              </button>
+              <button class="plan-card" data-plan="lifetime" type="button">
+                <span>Lifetime</span>
+                <strong>59 USDT</strong>
+                <small>1499 Birr in Ethiopia</small>
+              </button>
+            </div>
+
+            <div class="license-box">
+              <div>
+                <span class="mini-label">Device code</span>
+                <strong id="deviceCode">Loading</strong>
+              </div>
+              <button class="icon-button" id="copyDeviceButton" type="button" title="Copy device code">
+                <svg><use href="#icon-copy"></use></svg>
+              </button>
+            </div>
+
+            <div class="license-box">
+              <div>
+                <span class="mini-label">USDT TRC20</span>
+              <strong id="walletAddress">TPAp56PvAJiKCoGv5M6F1ykmGLbW7AuJyg</strong>
+              </div>
+              <button class="icon-button" id="copyWalletButton" type="button" title="Copy wallet address">
+                <svg><use href="#icon-copy"></use></svg>
+              </button>
+            </div>
+
+            <div class="license-box">
+              <div>
+                <span class="mini-label">CBE Ethiopia</span>
+                <strong id="cbeAccount">1000184706591</strong>
+              </div>
+              <button class="icon-button" id="copyCbeButton" type="button" title="Copy CBE account">
+                <svg><use href="#icon-copy"></use></svg>
+              </button>
+            </div>
+
+            <div class="license-box">
+              <div>
+                <span class="mini-label">Send proof to</span>
+                <strong id="proofContact">amin2sms@gmail.com</strong>
+              </div>
+              <button class="icon-button" id="copyProofButton" type="button" title="Copy proof contact">
+                <svg><use href="#icon-copy"></use></svg>
+              </button>
+            </div>
+
+            <div class="payment-summary">
+              <span>Selected payment</span>
+              <strong id="paymentSummary">24 USDT for 1 year Pro</strong>
+              <small><b id="paymentMethodLabel">USDT TRC20</b>: <span id="paymentMethodValue">TPAp56PvAJiKCoGv5M6F1ykmGLbW7AuJyg</span></small>
+            </div>
+
+            <button class="secondary-button wide-button" id="copyPaymentButton" type="button">
+              <svg><use href="#icon-copy"></use></svg>
+              <span>Copy Payment Message</span>
+            </button>
+            <button class="secondary-button wide-button" id="proofActionButton" type="button">
+              <svg><use href="#icon-mail"></use></svg>
+              <span>Email Payment Proof</span>
+            </button>
+
+            <div class="pay-steps">
+              <div><strong>1</strong><span>Send exact USDT or choose Ethiopia for CBE Birr payment</span></div>
+              <div><strong>2</strong><span>Send copied message + payment proof screenshot</span></div>
+              <div><strong>3</strong><span>Paste and save your unlock code</span></div>
+            </div>
+
+            <label class="unlock-field">
+              <span>Unlock code</span>
+              <textarea id="unlockCodeInput" rows="4" spellcheck="false"></textarea>
+            </label>
+            <button class="primary-button" id="unlockButton" type="button">
+              <svg><use href="#icon-lock"></use></svg>
+              <span>Activate Pro</span>
+            </button>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <dialog id="paywallDialog" class="paywall">
+      <form method="dialog">
+        <button class="close-button" value="cancel" aria-label="Close" type="submit">x</button>
+      </form>
+      <div class="paywall-body">
+        <div class="lock-badge">
+          <svg><use href="#icon-lock"></use></svg>
+        </div>
+        <h2>Pro export required</h2>
+        <p>Premium clean exports and campaign packs require Pro. The first three designs export free with a faint watermark. Choose Foreign or Ethiopia in Product, then send the copied payment message and proof.</p>
+        <div class="modal-plan-grid">
+          <button class="plan-card" data-plan="monthly" type="button">
+            <span>30 days</span>
+            <strong>5 USDT</strong>
+          </button>
+          <button class="plan-card active" data-plan="yearly" type="button">
+            <span>1 year</span>
+            <strong>24 USDT</strong>
+          </button>
+          <button class="plan-card" data-plan="lifetime" type="button">
+            <span>Lifetime</span>
+            <strong>59 USDT</strong>
+          </button>
+        </div>
+        <div class="copy-card highlight">
+          <span>Selected payment</span>
+          <strong id="modalPaymentSummary">24 USDT for 1 year Pro</strong>
+        </div>
+        <div class="copy-card">
+          <span>Device</span>
+          <strong id="modalDeviceCode">Loading</strong>
+        </div>
+        <div class="copy-card">
+          <span id="modalPaymentMethodLabel">USDT TRC20</span>
+          <strong id="modalPaymentMethodValue">TPAp56PvAJiKCoGv5M6F1ykmGLbW7AuJyg</strong>
+        </div>
+        <div class="copy-card">
+          <span>Send proof to</span>
+          <strong id="modalProofContact">amin2sms@gmail.com</strong>
+        </div>
+        <button class="primary-button" id="modalCopyButton" type="button">
+          <svg><use href="#icon-copy"></use></svg>
+          <span>Copy Payment Message</span>
+        </button>
+        <button class="secondary-button wide-button" id="modalProofActionButton" type="button">
+          <svg><use href="#icon-mail"></use></svg>
+          <span>Email Payment Proof</span>
+        </button>
+      </div>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script src="app.js?v=17"></script>
+  </body>
+</html>
